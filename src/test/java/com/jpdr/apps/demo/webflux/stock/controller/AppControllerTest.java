@@ -17,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.FluxExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -53,8 +52,7 @@ class AppControllerTest {
     List<StockDto> expectedStock = getAllStockDtos();
     String expectedBody = objectMapper.writeValueAsString(expectedStock);
     
-    when(appService.findAllStocks())
-      .thenReturn(Flux.fromIterable(expectedStock));
+    when(appService.findAllStocks()).thenReturn(Mono.just(expectedStock));
     
     
     FluxExchangeResult<String> exchangeResult = this.webTestClient.get()
@@ -131,7 +129,7 @@ class AppControllerTest {
     List<StockTransactionDto> expectedDtos = getStockTransactionDtos();
     String expectedBody = objectMapper.writeValueAsString(expectedDtos);
     
-    when(appService.findTransactions(anyInt())).thenReturn(Flux.fromIterable(expectedDtos));
+    when(appService.findTransactions(anyInt())).thenReturn(Mono.just(expectedDtos));
     
     FluxExchangeResult<String> exchangeResult = this.webTestClient.get().uri("/stock" + "/" + 1 + "/" + "transactions").exchange().expectHeader().contentType(MediaType.APPLICATION_JSON).expectStatus().isOk().returnResult(String.class);
     

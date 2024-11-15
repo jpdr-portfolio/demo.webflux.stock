@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -23,33 +24,37 @@ public class AppController {
   private final AppService appService;
   
   @GetMapping("/stock")
-  public ResponseEntity<Flux<StockDto>> getAllStock(){
-    return new ResponseEntity<>(appService.findAllStocks(), HttpStatus.OK);
+  public Mono<ResponseEntity<List<StockDto>>> getAllStock(){
+    return this.appService.findAllStocks()
+      .map(stocks -> new ResponseEntity<>(stocks, HttpStatus.OK));
   }
   
   @GetMapping("/stock/{productId}")
-  public ResponseEntity<Mono<StockDto>> getStockByProductId(
+  public Mono<ResponseEntity<StockDto>> getStockByProductId(
     @PathVariable(name = "productId") Integer productId){
-    return new ResponseEntity<>(appService.findStockByProductId(productId), HttpStatus.OK);
+    return this.appService.findStockByProductId(productId)
+      .map(stock -> new ResponseEntity<>(stock, HttpStatus.OK));
   }
   
   @PostMapping("/stock")
-  public ResponseEntity<Mono<StockDto>> createStock(
-    @RequestBody StockDto stockDto){
-    return new ResponseEntity<>(appService.createStock(stockDto), HttpStatus.CREATED);
+  public Mono<ResponseEntity<StockDto>> createStock(@RequestBody StockDto stockDto){
+    return this.appService.createStock(stockDto)
+      .map(stock -> new ResponseEntity<>(stock, HttpStatus.CREATED));
   }
   
   @GetMapping("/stock/{productId}/transactions")
-  public ResponseEntity<Flux<StockTransactionDto>> getTransactions(
+  public Mono<ResponseEntity<List<StockTransactionDto>>> getTransactions(
     @PathVariable(name = "productId", required = false) Integer productId){
-    return new ResponseEntity<>(appService.findTransactions(productId), HttpStatus.OK);
+    return this.appService.findTransactions(productId)
+      .map(transactions -> new ResponseEntity<>(transactions, HttpStatus.OK));
   }
   
   @PostMapping("/stock/{productId}/transactions")
-  public ResponseEntity<Mono<StockTransactionDto>> createTransaction(
+  public Mono<ResponseEntity<StockTransactionDto>> createTransaction(
     @PathVariable(name = "productId") Integer productId,
     @RequestBody StockTransactionDto transactionDto){
-    return new ResponseEntity<>(appService.createTransaction(productId, transactionDto), HttpStatus.CREATED);
+    return this.appService.createTransaction(productId, transactionDto)
+      .map(transactions -> new ResponseEntity<>(transactions, HttpStatus.CREATED));
   }
   
 }

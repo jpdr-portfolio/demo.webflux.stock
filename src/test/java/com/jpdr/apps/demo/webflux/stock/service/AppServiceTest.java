@@ -88,12 +88,11 @@ class AppServiceTest {
       .thenReturn(Flux.fromIterable(expectedStock));
     
     StepVerifier.create(appService.findAllStocks())
-      .assertNext(receivedStock -> assertStock(expectedStockMap.get(receivedStock.getProductId()),
-        receivedStock))
-      .assertNext(receivedStock -> assertStock(expectedStockMap.get(receivedStock.getProductId()),
-        receivedStock))
-      .assertNext(receivedStock -> assertStock(expectedStockMap.get(receivedStock.getProductId()),
-        receivedStock))
+      .assertNext(receivedStocks -> {
+        for(StockDto receivedStock : receivedStocks){
+          assertStock(expectedStockMap.get(receivedStock.getProductId()),receivedStock);
+        }
+      })
       .expectComplete()
       .verify();
     
@@ -196,12 +195,12 @@ class AppServiceTest {
       .thenReturn(Flux.fromIterable(expectedTransactions));
     
     StepVerifier.create(appService.findTransactions(1))
-      .assertNext(receivedTransaction -> assertTransaction(expectedTransactionsMap.get(receivedTransaction.getId()),
-        receivedTransaction))
-      .assertNext(receivedTransaction -> assertTransaction(expectedTransactionsMap.get(receivedTransaction.getId()),
-        receivedTransaction))
-      .assertNext(receivedTransaction -> assertTransaction(expectedTransactionsMap.get(receivedTransaction.getId()),
-        receivedTransaction))
+      .assertNext(receivedTransactions -> {
+        for(StockTransactionDto receivedTransaction : receivedTransactions){
+          assertTransaction(expectedTransactionsMap.get(receivedTransaction.getId()),
+            receivedTransaction);
+        }
+      })
       .expectComplete()
       .verify();
     

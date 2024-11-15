@@ -21,6 +21,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -34,7 +35,7 @@ public class AppServiceImpl implements AppService {
   
   
   @Override
-  public Flux<StockDto> findAllStocks() {
+  public Mono<List<StockDto>> findAllStocks() {
     log.debug("findAllStocks");
     return this.stockRepository.findAll()
       .flatMap(stock ->
@@ -46,7 +47,8 @@ public class AppServiceImpl implements AppService {
         stockDto.setProductName(tuple.getT2().getName());
         return stockDto;
       })
-      .doOnNext(stockDto -> log.debug(stockDto.toString()));
+      .doOnNext(stockDto -> log.debug(stockDto.toString()))
+      .collectList();
   }
   
   @Override
@@ -95,9 +97,9 @@ public class AppServiceImpl implements AppService {
 
   
   @Override
-  public Flux<StockTransactionDto> findTransactions(Integer productId) {
+  public Mono<List<StockTransactionDto>> findTransactions(Integer productId) {
     return Mono.just(Optional.ofNullable(productId))
-      .flatMapMany( optional -> {
+      .flatMap( optional -> {
           if (optional.isPresent()) {
             return this.findTransactionsByProductId(optional.get());
           }
@@ -107,20 +109,22 @@ public class AppServiceImpl implements AppService {
   }
   
   @Override
-  public Flux<StockTransactionDto> findTransactionsByProductId(Integer productId) {
+  public Mono<List<StockTransactionDto>> findTransactionsByProductId(Integer productId) {
     log.debug("findTransactionsByProductId");
     return this.productRepository.getProductById(productId)
       .flatMapMany(productDto -> this.transactionRepository.findAllByProductId(productDto.getId())
         .map(StockTransactionMapper.INSTANCE::entityToDto))
-      .doOnNext(transactionDto -> log.debug(transactionDto.toString()));
+      .doOnNext(transactionDto -> log.debug(transactionDto.toString()))
+      .collectList();
   }
   
   @Override
-  public Flux<StockTransactionDto> findAllTransactions() {
+  public Mono<List<StockTransactionDto>> findAllTransactions() {
     log.debug("findAllTransactions");
     return this.transactionRepository.findAll()
       .map(StockTransactionMapper.INSTANCE::entityToDto)
-      .doOnNext(transactionDto -> log.debug(transactionDto.toString()));
+      .doOnNext(transactionDto -> log.debug(transactionDto.toString()))
+      .collectList();
   }
   
   @Override
