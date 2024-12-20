@@ -14,6 +14,7 @@ import com.jpdr.apps.demo.webflux.stock.service.mapper.StockMapper;
 import com.jpdr.apps.demo.webflux.stock.service.mapper.StockTransactionMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -52,6 +53,7 @@ public class AppServiceImpl implements AppService {
   }
   
   @Override
+  @Cacheable(key = "#productId", value = "stock", sync = true)
   public Mono<StockDto> findStockByProductId(Integer productId) {
     log.debug("findStockByProductId");
     return this.productRepository.getProductById(productId)

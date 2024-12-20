@@ -5,6 +5,7 @@ import com.jpdr.apps.demo.webflux.stock.exception.product.ProductRepositoryExcep
 import com.jpdr.apps.demo.webflux.stock.repository.product.ProductRepository;
 import com.jpdr.apps.demo.webflux.stock.service.dto.product.ProductDto;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -23,6 +24,7 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
   
   @Override
+  @Cacheable(key = "#productId", value = "products", sync = true)
   public Mono<ProductDto> getProductById(Integer productId) {
     return this.webClient.get()
       .uri("/products/{productId}", productId)
