@@ -14,6 +14,7 @@ import com.jpdr.apps.demo.webflux.stock.service.mapper.StockMapper;
 import com.jpdr.apps.demo.webflux.stock.service.mapper.StockTransactionMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +72,7 @@ public class AppServiceImpl implements AppService {
   }
   
   @Override
+  @Cacheable(key = "#productId", value = "stock", sync = true)
   @Transactional
   public Mono<StockDto> createStock(StockDto stockDto) {
     log.debug("createStock");
@@ -130,6 +132,7 @@ public class AppServiceImpl implements AppService {
   }
   
   @Override
+  @CacheEvict(key = "#productId", value = "stock")
   @Transactional
   public Mono<StockTransactionDto> createTransaction(Integer productId, StockTransactionDto transactionDto) {
     log.debug("createTransaction");
