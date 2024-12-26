@@ -39,7 +39,7 @@ public class AppServiceImpl implements AppService {
   public Mono<List<StockDto>> findAllStocks() {
     log.debug("findAllStocks");
     return this.stockRepository.findAll()
-      .flatMap(stock ->
+      .flatMapSequential(stock ->
         Flux.zip(
           Mono.just(stock).repeat(),
           Flux.from(this.productRepository.getProductById(stock.getProductId()))))
