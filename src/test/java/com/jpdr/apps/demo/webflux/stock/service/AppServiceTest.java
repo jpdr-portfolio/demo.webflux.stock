@@ -1,5 +1,6 @@
 package com.jpdr.apps.demo.webflux.stock.service;
 
+import com.jpdr.apps.demo.webflux.commons.caching.CacheHelper;
 import com.jpdr.apps.demo.webflux.stock.exception.product.ProductNotFoundException;
 import com.jpdr.apps.demo.webflux.stock.exception.stock.InsufficientQuantityException;
 import com.jpdr.apps.demo.webflux.stock.exception.stock.StockNotFoundException;
@@ -56,16 +57,14 @@ class AppServiceTest {
   
   @InjectMocks
   private AppServiceImpl appService;
-  
   @Mock
   private StockRepository stockRepository;
-  
   @Mock
   private StockTransactionRepository stockTransactionRepository;
-  
   @Mock
   private ProductRepository productRepository;
-  
+  @Mock
+  private CacheHelper cacheHelper;
   private ProductDto product;
   
   @BeforeEach

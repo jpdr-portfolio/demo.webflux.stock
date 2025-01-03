@@ -1,7 +1,6 @@
 package com.jpdr.apps.demo.webflux.stock.model;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;

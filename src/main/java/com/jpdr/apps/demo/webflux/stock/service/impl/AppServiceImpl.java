@@ -1,5 +1,6 @@
 package com.jpdr.apps.demo.webflux.stock.service.impl;
 
+import com.jpdr.apps.demo.webflux.commons.caching.CacheHelper;
 import com.jpdr.apps.demo.webflux.stock.exception.stock.StockNotFoundException;
 import com.jpdr.apps.demo.webflux.stock.helper.StockTransactionHelper;
 import com.jpdr.apps.demo.webflux.stock.model.Stock;
@@ -34,6 +35,7 @@ public class AppServiceImpl implements AppService {
   private final StockRepository stockRepository;
   private final StockTransactionRepository transactionRepository;
   private final ProductRepository productRepository;
+  private final CacheHelper cacheHelper;
   
   
   @Override
@@ -72,7 +74,6 @@ public class AppServiceImpl implements AppService {
   }
   
   @Override
-  @Cacheable(key = "#productId", value = "stock", sync = true)
   @Transactional
   public Mono<StockDto> createStock(StockDto stockDto) {
     log.debug("createStock");
@@ -95,7 +96,9 @@ public class AppServiceImpl implements AppService {
         createdStockDto.setProductName(tuple.getT2().getName());
         return createdStockDto;
       })
-      .doOnNext(createdStockDto -> log.debug(createdStockDto.toString()));
+      .doOnNext(createdStockDto -> log.debug(createdStockDto.toString()))
+      .doOnNext(createdStockDto -> this.cacheHelper.put("stock",
+        createdStockDto.getProductId(), createdStockDto));
   }
   
 
