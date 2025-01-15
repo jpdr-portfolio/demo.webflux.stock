@@ -14,11 +14,13 @@ import java.time.OffsetDateTime;
 
 public class StockTransactionHelper {
   
+  private StockTransactionHelper() {}
+  
   public static StockTransaction create(Stock stock, StockTransactionDto dto){
     
       switch (dto.getTransactionType()){
         case StockTransactionTypeEnum.INCREASE : {
-          if (dto.getQuantity() == null || dto.getQuantity() < 0){
+          if (dto.getQuantity() < 0){
             throw new ValidationException("The quantity is invalid.");
           }
           StockTransaction stockTransaction = getBaseTransaction(stock.getProductId(), dto);
@@ -27,7 +29,7 @@ public class StockTransactionHelper {
         }
         
         case StockTransactionTypeEnum.DECREASE : {
-          if (dto.getQuantity() == null || dto.getQuantity() < 0){
+          if ( dto.getQuantity() < 0){
             throw new ValidationException("The quantity is invalid.");
           }
           if(stock.getQuantity() < dto.getQuantity()){
@@ -38,7 +40,7 @@ public class StockTransactionHelper {
           return stockTransaction;
         }
         case StockTransactionTypeEnum.SET_PRICE : {
-          if (dto.getUnitPrice() == null || dto.getUnitPrice().compareTo(BigDecimal.ZERO) < 1){
+          if (dto.getUnitPrice().compareTo(BigDecimal.ZERO) < 1){
             throw new ValidationException("The unit price is invalid.");
           }
           StockTransaction stockTransaction = getBaseTransaction(stock.getProductId(), dto);
@@ -73,7 +75,7 @@ public class StockTransactionHelper {
   }
   
   
-  private static StockTransaction getBaseTransaction(Integer productId, StockTransactionDto dto){
+  private static StockTransaction getBaseTransaction(Long productId, StockTransactionDto dto){
     StockTransaction transaction = StockTransactionMapper.INSTANCE.dtoToEntity(dto);
     transaction.setProductId(productId);
     transaction.setTransactionType(dto.getTransactionType().getValue());

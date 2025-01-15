@@ -58,7 +58,7 @@ class GlobalExceptionHandlerTest {
   @Test
   @DisplayName("Error - ProductNotFoundException")
   void givenProductNotFoundExceptionWhenHandleExceptionThenReturnError(){
-    ProductNotFoundException exception = new ProductNotFoundException(1, new RuntimeException());
+    ProductNotFoundException exception = new ProductNotFoundException(1L, new RuntimeException());
     ResponseEntity<Mono<ErrorDto>> response = globalExceptionHandler.handleException(exception);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
@@ -66,7 +66,7 @@ class GlobalExceptionHandlerTest {
   @Test
   @DisplayName("Error - StockNotFoundException")
   void givenStockNotFoundExceptionWhenHandleExceptionThenReturnError(){
-    StockNotFoundException exception = new StockNotFoundException(1);
+    StockNotFoundException exception = new StockNotFoundException(1L);
     ResponseEntity<Mono<ErrorDto>> response = globalExceptionHandler.handleException(exception);
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
@@ -75,7 +75,7 @@ class GlobalExceptionHandlerTest {
   @Test
   @DisplayName("Error - InsufficientQuantityException")
   void givenInsufficientQuantityExceptionWhenHandleExceptionThenReturnError(){
-    InsufficientQuantityException exception = new InsufficientQuantityException(1,1);
+    InsufficientQuantityException exception = new InsufficientQuantityException(1L,1);
     ResponseEntity<Mono<ErrorDto>> response = globalExceptionHandler.handleException(exception);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
@@ -85,7 +85,7 @@ class GlobalExceptionHandlerTest {
   @Test
   @DisplayName("Error - RuntimeException")
   void givenProductRepositoryExceptionWhenHandleExceptionThenReturnError(){
-    ProductRepositoryException exception = new ProductRepositoryException(1,new RuntimeException());
+    ProductRepositoryException exception = new ProductRepositoryException(1L,new RuntimeException());
     ResponseEntity<Mono<ErrorDto>> response = globalExceptionHandler.handleException(exception);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }

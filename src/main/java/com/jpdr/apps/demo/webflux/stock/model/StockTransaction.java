@@ -20,9 +20,9 @@ public class StockTransaction {
   
   @Id
   @Column("id")
-  Integer id;
+  Long id;
   @Column("product_id")
-  Integer productId;
+  Long productId;
   @Column("description")
   String description;
   @Column("quantity")

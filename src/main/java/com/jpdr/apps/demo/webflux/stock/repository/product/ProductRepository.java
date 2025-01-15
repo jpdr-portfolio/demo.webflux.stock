@@ -5,6 +5,6 @@ import reactor.core.publisher.Mono;
 
 public interface ProductRepository {
   
-  Mono<ProductDto> getProductById(Integer productId);
+  Mono<ProductDto> getProductById(Long productId);
   
 }

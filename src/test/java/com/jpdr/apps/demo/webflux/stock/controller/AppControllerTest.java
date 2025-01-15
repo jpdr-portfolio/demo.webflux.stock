@@ -32,7 +32,7 @@ import static com.jpdr.apps.demo.webflux.stock.util.TestDataGenerator.getStockTr
 import static com.jpdr.apps.demo.webflux.stock.util.TestDataGenerator.getStockTransactionDtos;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -80,7 +80,7 @@ class AppControllerTest {
   
     StockDto expectedDto = getStockDto();
     
-    when(appService.findStockByProductId(anyInt()))
+    when(appService.findStockByProductId(anyLong()))
       .thenReturn(Mono.just(expectedDto));
     
     FluxExchangeResult<StockDto> exchangeResult = this.webTestClient.get()
@@ -132,7 +132,7 @@ class AppControllerTest {
     List<StockTransactionDto> expectedDtos = getStockTransactionDtos();
     String expectedBody = objectMapper.writeValueAsString(expectedDtos);
     
-    when(appService.findTransactions(anyInt())).thenReturn(Mono.just(expectedDtos));
+    when(appService.findTransactions(anyLong())).thenReturn(Mono.just(expectedDtos));
     
     FluxExchangeResult<String> exchangeResult = this.webTestClient.get().uri("/stock" + "/" + 1 + "/" + "transactions").exchange().expectHeader().contentType(MediaType.APPLICATION_JSON).expectStatus().isOk().returnResult(String.class);
     
@@ -146,7 +146,7 @@ class AppControllerTest {
     StockTransactionDto requestDto = getNewTransactionDto();
     StockTransactionDto expectedDto = getStockTransactionDto();
     
-    when(appService.createTransaction(anyInt(),any(StockTransactionDto.class)))
+    when(appService.createTransaction(anyLong(),any(StockTransactionDto.class)))
       .thenReturn(Mono.just(expectedDto));
     
     FluxExchangeResult<StockTransactionDto> exchangeResult = this.webTestClient.post()
@@ -175,7 +175,7 @@ class AppControllerTest {
     StockTransactionDto expectedDto = getStockTransactionDto();
     expectedDto.setTransactionType(StockTransactionTypeEnum.DECREASE);
     
-    when(appService.createTransaction(anyInt(),any(StockTransactionDto.class)))
+    when(appService.createTransaction(anyLong(),any(StockTransactionDto.class)))
       .thenReturn(Mono.just(expectedDto));
     
     FluxExchangeResult<StockTransactionDto> exchangeResult = this.webTestClient.post()
@@ -206,7 +206,7 @@ class AppControllerTest {
     StockTransactionDto expectedDto = getStockTransactionDto();
     expectedDto.setTransactionType(StockTransactionTypeEnum.SET_PRICE);
     
-    when(appService.createTransaction(anyInt(),any(StockTransactionDto.class)))
+    when(appService.createTransaction(anyLong(),any(StockTransactionDto.class)))
       .thenReturn(Mono.just(expectedDto));
     
     FluxExchangeResult<StockTransactionDto> exchangeResult = this.webTestClient.post()

@@ -25,7 +25,7 @@ public class ProductRepositoryImpl implements ProductRepository {
   
   @Override
   @Cacheable(key = "#productId", value = "products", sync = true)
-  public Mono<ProductDto> getProductById(Integer productId) {
+  public Mono<ProductDto> getProductById(Long productId) {
     return this.webClient.get()
       .uri("/products/{productId}", productId)
       .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

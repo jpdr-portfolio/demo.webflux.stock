@@ -6,8 +6,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
 @Repository
-public interface StockTransactionRepository extends ReactiveCrudRepository<StockTransaction, Integer> {
+public interface StockTransactionRepository extends ReactiveCrudRepository<StockTransaction, Long> {
   
-  Flux<StockTransaction> findAllByProductId(Integer productId);
+  Flux<StockTransaction> findAllByProductId(Long productId);
   
 }

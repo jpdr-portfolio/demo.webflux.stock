@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 public class StockDto implements Serializable {
   
   @JsonInclude(Include.NON_NULL)
-  Integer productId;
+  Long productId;
   @JsonInclude(Include.NON_NULL)
   String productName;
   @NonNull
@@ -30,7 +30,7 @@ public class StockDto implements Serializable {
   @NonNull
   BigDecimal unitPrice;
   @JsonInclude(Include.NON_NULL)
-  Integer lastTransactionId;
+  Long lastTransactionId;
   @JsonInclude(Include.NON_EMPTY)
   String lastTransactionDate;
   

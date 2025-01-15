@@ -46,7 +46,7 @@ import static com.jpdr.apps.demo.webflux.stock.util.TestDataGenerator.getStockTr
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -70,7 +70,7 @@ class AppServiceTest {
   @BeforeEach
   void setupEach(){
     product = getProduct();
-    when(productRepository.getProductById(anyInt()))
+    when(productRepository.getProductById(anyLong()))
       .thenReturn(Mono.just(product));
   }
   
@@ -80,7 +80,7 @@ class AppServiceTest {
   void givenStockWhenFindAllStockThenReturnStock(){
     
     List<Stock> expectedStock = getAllStock();
-    Map<Integer, Stock> expectedStockMap = expectedStock.stream()
+    Map<Long, Stock> expectedStockMap = expectedStock.stream()
       .collect(Collectors.toMap(Stock::getProductId, Function.identity()));
     
     when(stockRepository.findAll())
@@ -103,10 +103,10 @@ class AppServiceTest {
     
     Stock expectedStock = getStock();
     
-    when(stockRepository.findById(anyInt()))
+    when(stockRepository.findById(anyLong()))
       .thenReturn(Mono.just(expectedStock));
     
-    StepVerifier.create(appService.findStockByProductId(1))
+    StepVerifier.create(appService.findStockByProductId(1L))
       .assertNext(receivedStock -> assertStock(expectedStock, receivedStock))
       .expectComplete()
       .verify();
@@ -117,10 +117,10 @@ class AppServiceTest {
   @DisplayName("Error - Find Stock By Id - Not found")
   void givenNotFoundWhenFindStockByIdThenReturnError(){
     
-    when(stockRepository.findById(anyInt()))
+    when(stockRepository.findById(anyLong()))
       .thenReturn(Mono.empty());
     
-    StepVerifier.create(appService.findStockByProductId(1))
+    StepVerifier.create(appService.findStockByProductId(1L))
       .expectError(StockNotFoundException.class)
       .verify();
     
@@ -130,10 +130,10 @@ class AppServiceTest {
   @DisplayName("Error - Find Stock By Id - Product Not found")
   void givenProductNotFoundWhenFindStockByIdThenReturnError(){
     
-    when(productRepository.getProductById(anyInt()))
-      .thenReturn(Mono.error(new ProductNotFoundException(1, new RuntimeException())));
+    when(productRepository.getProductById(anyLong()))
+      .thenReturn(Mono.error(new ProductNotFoundException(1L, new RuntimeException())));
     
-    StepVerifier.create(appService.findStockByProductId(1))
+    StepVerifier.create(appService.findStockByProductId(1L))
       .expectError(ProductNotFoundException.class)
       .verify();
     
@@ -152,7 +152,7 @@ class AppServiceTest {
     when(stockRepository.save(any(Stock.class)))
       .thenAnswer(i->{
         Stock savedStock = i.getArgument(0);
-        savedStock.setProductId(1);
+        savedStock.setProductId(1L);
         return Mono.just(savedStock);
       });
     
@@ -172,8 +172,8 @@ class AppServiceTest {
     
     StockDto requestStock = getNewStockDto();
     
-    when(productRepository.getProductById(anyInt()))
-      .thenReturn(Mono.error(new ProductNotFoundException(1,new RuntimeException())));
+    when(productRepository.getProductById(anyLong()))
+      .thenReturn(Mono.error(new ProductNotFoundException(1L,new RuntimeException())));
     
     StepVerifier.create(appService.createStock(requestStock))
       .expectError(ProductNotFoundException.class)
@@ -187,13 +187,13 @@ class AppServiceTest {
   void givenProductIdWhenFindTransactionsByProductIdThenReturnTransactions(){
     
     List<StockTransaction> expectedTransactions = getStockTransactions();
-    Map<Integer, StockTransaction> expectedTransactionsMap = expectedTransactions.stream()
+    Map<Long, StockTransaction> expectedTransactionsMap = expectedTransactions.stream()
       .collect(Collectors.toMap(StockTransaction::getId, Function.identity()));
     
-    when(stockTransactionRepository.findAllByProductId(anyInt()))
+    when(stockTransactionRepository.findAllByProductId(anyLong()))
       .thenReturn(Flux.fromIterable(expectedTransactions));
     
-    StepVerifier.create(appService.findTransactions(1))
+    StepVerifier.create(appService.findTransactions(1L))
       .assertNext(receivedTransactions -> {
         for(StockTransactionDto receivedTransaction : receivedTransactions){
           assertTransaction(expectedTransactionsMap.get(receivedTransaction.getId()),
@@ -209,10 +209,10 @@ class AppServiceTest {
   @DisplayName("Error - Find Transactions By Product Id - Product Not Found")
   void givenProductNotFoundWhenFindTransactionsByProductIdThenReturnError(){
     
-    when(productRepository.getProductById(anyInt()))
-      .thenReturn(Mono.error(new ProductNotFoundException(1,new RuntimeException())));
+    when(productRepository.getProductById(anyLong()))
+      .thenReturn(Mono.error(new ProductNotFoundException(1L,new RuntimeException())));
     
-    StepVerifier.create(appService.findTransactions(1))
+    StepVerifier.create(appService.findTransactions(1L))
       .expectError(ProductNotFoundException.class)
       .verify();
     
@@ -225,27 +225,27 @@ class AppServiceTest {
     
     StockTransactionDto requestTransaction = getStockTransactionDto(StockTransactionTypeEnum.INCREASE);
     Stock expectedStock = getStock();
-    expectedStock.setProductId(1);
+    expectedStock.setProductId(1L);
     
     ArgumentCaptor<Stock> stockCaptor = ArgumentCaptor.forClass(Stock.class);
     
-    when(stockRepository.findById(anyInt()))
+    when(stockRepository.findById(anyLong()))
       .thenReturn(Mono.just(expectedStock));
     when(stockTransactionRepository.save(any(StockTransaction.class)))
       .thenAnswer(i->{
         StockTransaction savedTransaction = i.getArgument(0);
-        savedTransaction.setId(1);
-        savedTransaction.setProductId(1);
+        savedTransaction.setId(1L);
+        savedTransaction.setProductId(1L);
         return Mono.just(savedTransaction);
       });
     when(stockRepository.save(any(Stock.class)))
       .thenAnswer(i->{
         Stock savedStock = i.getArgument(0);
-        savedStock.setProductId(1);
+        savedStock.setProductId(1L);
         return Mono.just(savedStock);
       });
     
-    StepVerifier.create(appService.createTransaction(1, requestTransaction))
+    StepVerifier.create(appService.createTransaction(1L, requestTransaction))
       .assertNext(receivedTransaction -> {
         verify(stockRepository).save(stockCaptor.capture());
         assertEquals(200, stockCaptor.getValue().getQuantity());
@@ -262,10 +262,10 @@ class AppServiceTest {
     
     StockTransactionDto requestTransaction = getStockTransactionDto(StockTransactionTypeEnum.INCREASE);
     
-    when(stockRepository.findById(anyInt()))
-      .thenReturn(Mono.error(new StockNotFoundException(1)));
+    when(stockRepository.findById(anyLong()))
+      .thenReturn(Mono.error(new StockNotFoundException(1L)));
     
-    StepVerifier.create(appService.createTransaction(1, requestTransaction))
+    StepVerifier.create(appService.createTransaction(1L, requestTransaction))
       .expectError(StockNotFoundException.class)
       .verify();
     
@@ -282,27 +282,27 @@ class AppServiceTest {
     
     StockTransactionDto requestTransaction = getStockTransactionDto(StockTransactionTypeEnum.DECREASE);
     Stock expectedStock = getStock();
-    expectedStock.setProductId(1);
+    expectedStock.setProductId(1L);
     
     ArgumentCaptor<Stock> stockCaptor = ArgumentCaptor.forClass(Stock.class);
     
-    when(stockRepository.findById(anyInt()))
+    when(stockRepository.findById(anyLong()))
       .thenReturn(Mono.just(expectedStock));
     when(stockTransactionRepository.save(any(StockTransaction.class)))
       .thenAnswer(i->{
         StockTransaction savedTransaction = i.getArgument(0);
-        savedTransaction.setId(1);
-        savedTransaction.setProductId(1);
+        savedTransaction.setId(1L);
+        savedTransaction.setProductId(1L);
         return Mono.just(savedTransaction);
       });
     when(stockRepository.save(any(Stock.class)))
       .thenAnswer(i->{
         Stock savedStock = i.getArgument(0);
-        savedStock.setProductId(1);
+        savedStock.setProductId(1L);
         return Mono.just(savedStock);
       });
     
-    StepVerifier.create(appService.createTransaction(1, requestTransaction))
+    StepVerifier.create(appService.createTransaction(1L, requestTransaction))
       .assertNext(receivedTransaction -> {
         verify(stockRepository).save(stockCaptor.capture());
         assertEquals(0, stockCaptor.getValue().getQuantity());
@@ -319,10 +319,10 @@ class AppServiceTest {
     
     StockTransactionDto requestTransaction = getStockTransactionDto(StockTransactionTypeEnum.DECREASE);
     
-    when(stockRepository.findById(anyInt()))
-      .thenReturn(Mono.error(new StockNotFoundException(1)));
+    when(stockRepository.findById(anyLong()))
+      .thenReturn(Mono.error(new StockNotFoundException(1L)));
     
-    StepVerifier.create(appService.createTransaction(1, requestTransaction))
+    StepVerifier.create(appService.createTransaction(1L, requestTransaction))
       .expectError(StockNotFoundException.class)
       .verify();
     
@@ -334,10 +334,10 @@ class AppServiceTest {
     
     StockTransactionDto requestTransaction = getStockTransactionDto(StockTransactionTypeEnum.DECREASE);
     
-    when(stockRepository.findById(anyInt()))
+    when(stockRepository.findById(anyLong()))
       .thenReturn(Mono.empty());
     
-    StepVerifier.create(appService.createTransaction(1, requestTransaction))
+    StepVerifier.create(appService.createTransaction(1L, requestTransaction))
       .expectError(StockNotFoundException.class)
       .verify();
     
@@ -352,10 +352,10 @@ class AppServiceTest {
     Stock expectedStock = getStock();
     expectedStock.setQuantity(0);
     
-    when(stockRepository.findById(anyInt()))
+    when(stockRepository.findById(anyLong()))
       .thenReturn(Mono.just(expectedStock));
     
-    StepVerifier.create(appService.createTransaction(1, requestTransaction))
+    StepVerifier.create(appService.createTransaction(1L, requestTransaction))
       .expectError(InsufficientQuantityException.class)
       .verify();
     
@@ -381,29 +381,29 @@ class AppServiceTest {
     requestTransaction.setUnitPrice(BigDecimal.valueOf(500.00));
 
     Stock expectedStock = getStock();
-    expectedStock.setProductId(1);
+    expectedStock.setProductId(1L);
     expectedStock.setQuantity(0);
     expectedStock.setUnitPrice(BigDecimal.valueOf(100.00));
     
     ArgumentCaptor<Stock> stockCaptor = ArgumentCaptor.forClass(Stock.class);
     
-    when(stockRepository.findById(anyInt()))
+    when(stockRepository.findById(anyLong()))
       .thenReturn(Mono.just(expectedStock));
     when(stockTransactionRepository.save(any(StockTransaction.class)))
       .thenAnswer(i->{
         StockTransaction savedTransaction = i.getArgument(0);
-        savedTransaction.setId(1);
-        savedTransaction.setProductId(1);
+        savedTransaction.setId(1L);
+        savedTransaction.setProductId(1L);
         return Mono.just(savedTransaction);
       });
     when(stockRepository.save(any(Stock.class)))
       .thenAnswer(i->{
         Stock savedStock = i.getArgument(0);
-        savedStock.setProductId(1);
+        savedStock.setProductId(1L);
         return Mono.just(savedStock);
       });
     
-    StepVerifier.create(appService.createTransaction(1, requestTransaction))
+    StepVerifier.create(appService.createTransaction(1L, requestTransaction))
       .assertNext(receivedTransaction -> {
         verify(stockRepository).save(stockCaptor.capture());
         assertEquals(expectedStock.getQuantity(), stockCaptor.getValue().getQuantity());
@@ -421,10 +421,10 @@ class AppServiceTest {
     requestTransaction.setQuantity(0);
     requestTransaction.setUnitPrice(BigDecimal.valueOf(100.00));
     
-    when(stockRepository.findById(anyInt()))
-      .thenReturn(Mono.error(new StockNotFoundException(1)));
+    when(stockRepository.findById(anyLong()))
+      .thenReturn(Mono.error(new StockNotFoundException(1L)));
     
-    StepVerifier.create(appService.createTransaction(1, requestTransaction))
+    StepVerifier.create(appService.createTransaction(1L, requestTransaction))
       .expectError(StockNotFoundException.class)
       .verify();
     
@@ -439,14 +439,14 @@ class AppServiceTest {
     requestTransaction.setQuantity(0);
     requestTransaction.setUnitPrice(BigDecimal.valueOf(-1.00));
     Stock expectedStock = getStock();
-    expectedStock.setProductId(1);
+    expectedStock.setProductId(1L);
     expectedStock.setQuantity(100);
     expectedStock.setUnitPrice(BigDecimal.valueOf(100.00));
     
-    when(stockRepository.findById(anyInt()))
+    when(stockRepository.findById(anyLong()))
       .thenReturn(Mono.just(expectedStock));
     
-    StepVerifier.create(appService.createTransaction(1, requestTransaction))
+    StepVerifier.create(appService.createTransaction(1L, requestTransaction))
       .expectError(ValidationException.class)
       .verify();
     

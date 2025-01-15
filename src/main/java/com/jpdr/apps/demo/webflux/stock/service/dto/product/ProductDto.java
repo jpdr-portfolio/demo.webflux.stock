@@ -19,16 +19,20 @@ import java.io.Serializable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductDto implements Serializable {
   
-  @JsonInclude(Include.NON_NULL)
-  Integer id;
+@JsonInclude(Include.NON_NULL)
+  Long id;
   @NonNull
-  String name;
+  String productName;
   @JsonInclude(Include.NON_NULL)
-  Integer categoryId;
+  Long categoryId;
   @JsonInclude(Include.NON_NULL)
   String categoryName;
   @JsonInclude(Include.NON_NULL)
-  Integer retailerId;
+  Long subCategoryId;
+  @JsonInclude(Include.NON_NULL)
+  String subCategoryName;
+  @JsonInclude(Include.NON_NULL)
+  Long retailerId;
   @JsonInclude(Include.NON_NULL)
   String retailerName;
   @JsonInclude(Include.NON_NULL)

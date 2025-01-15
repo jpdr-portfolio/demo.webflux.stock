@@ -34,7 +34,7 @@ public class AppController {
   
   @GetMapping("/stock/{productId}")
   public Mono<ResponseEntity<StockDto>> getStockByProductId(
-    @PathVariable(name = "productId") Integer productId){
+    @PathVariable(name = "productId") Long productId){
     return this.appService.findStockByProductId(productId)
       .doOnNext(stock -> this.eventLogger.logEvent("findStockByProductId", stock))
       .map(stock -> new ResponseEntity<>(stock, HttpStatus.OK));
@@ -49,7 +49,7 @@ public class AppController {
   
   @GetMapping("/stock/{productId}/transactions")
   public Mono<ResponseEntity<List<StockTransactionDto>>> getTransactions(
-    @PathVariable(name = "productId", required = false) Integer productId){
+    @PathVariable(name = "productId", required = false) Long productId){
     return this.appService.findTransactions(productId)
       .doOnNext(transactions ->
         this.eventLogger.logEvent("getTransactions", transactions))
@@ -58,7 +58,7 @@ public class AppController {
   
   @PostMapping("/stock/{productId}/transactions")
   public Mono<ResponseEntity<StockTransactionDto>> createTransaction(
-    @PathVariable(name = "productId") Integer productId,
+    @PathVariable(name = "productId") Long productId,
     @RequestBody StockTransactionDto transactionDto){
     return this.appService.createTransaction(productId, transactionDto)
       .doOnNext(transaction ->

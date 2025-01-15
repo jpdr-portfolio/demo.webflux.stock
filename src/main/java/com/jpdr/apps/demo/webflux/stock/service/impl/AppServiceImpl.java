@@ -48,7 +48,7 @@ public class AppServiceImpl implements AppService {
           Flux.from(this.productRepository.getProductById(stock.getProductId()))))
       .map(tuple -> {
         StockDto stockDto = StockMapper.INSTANCE.entityToDto(tuple.getT1());
-        stockDto.setProductName(tuple.getT2().getName());
+        stockDto.setProductName(tuple.getT2().getProductName());
         return stockDto;
       })
       .doOnNext(stockDto -> log.debug(stockDto.toString()))
@@ -57,7 +57,7 @@ public class AppServiceImpl implements AppService {
   
   @Override
   @Cacheable(key = "#productId", value = "stock", sync = true)
-  public Mono<StockDto> findStockByProductId(Integer productId) {
+  public Mono<StockDto> findStockByProductId(Long productId) {
     log.debug("findStockByProductId");
     return this.productRepository.getProductById(productId)
       .flatMap(productDto ->
@@ -67,7 +67,7 @@ public class AppServiceImpl implements AppService {
             .switchIfEmpty(Mono.error(new StockNotFoundException(productDto.getId()))))))
       .map(tuple -> {
           StockDto stockDto = StockMapper.INSTANCE.entityToDto(tuple.getT2());
-          stockDto.setProductName(tuple.getT1().getName());
+          stockDto.setProductName(tuple.getT1().getProductName());
           return stockDto;
         })
       .doOnNext(stockDto -> log.debug(stockDto.toString()));
@@ -93,7 +93,7 @@ public class AppServiceImpl implements AppService {
           Mono.just(tuple.getT2())))
       .map(tuple -> {
         StockDto createdStockDto = StockMapper.INSTANCE.entityToDto(tuple.getT1());
-        createdStockDto.setProductName(tuple.getT2().getName());
+        createdStockDto.setProductName(tuple.getT2().getProductName());
         return createdStockDto;
       })
       .doOnNext(createdStockDto -> log.debug(createdStockDto.toString()))
@@ -104,7 +104,7 @@ public class AppServiceImpl implements AppService {
 
   
   @Override
-  public Mono<List<StockTransactionDto>> findTransactions(Integer productId) {
+  public Mono<List<StockTransactionDto>> findTransactions(Long productId) {
     return Mono.just(Optional.ofNullable(productId))
       .flatMap( optional -> {
           if (optional.isPresent()) {
@@ -116,7 +116,7 @@ public class AppServiceImpl implements AppService {
   }
   
   @Override
-  public Mono<List<StockTransactionDto>> findTransactionsByProductId(Integer productId) {
+  public Mono<List<StockTransactionDto>> findTransactionsByProductId(Long productId) {
     log.debug("findTransactionsByProductId");
     return this.productRepository.getProductById(productId)
       .flatMapMany(productDto -> this.transactionRepository.findAllByProductId(productDto.getId())
@@ -137,7 +137,7 @@ public class AppServiceImpl implements AppService {
   @Override
   @CacheEvict(key = "#productId", value = "stock")
   @Transactional
-  public Mono<StockTransactionDto> createTransaction(Integer productId, StockTransactionDto transactionDto) {
+  public Mono<StockTransactionDto> createTransaction(Long productId, StockTransactionDto transactionDto) {
     log.debug("createTransaction");
     return Mono.zip(
         Mono.from(this.stockRepository.findById(productId)

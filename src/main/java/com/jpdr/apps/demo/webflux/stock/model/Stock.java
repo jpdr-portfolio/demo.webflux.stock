@@ -20,17 +20,17 @@ import java.time.OffsetDateTime;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
-public class Stock implements Persistable<Integer> {
+public class Stock implements Persistable<Long> {
   
   @Id
   @Column("product_id")
-  Integer productId;
+  Long productId;
   @Column("quantity")
   Integer quantity;
   @Column("unit_price")
   BigDecimal unitPrice;
   @Column("last_transaction_id")
-  Integer lastTransactionId;
+  Long lastTransactionId;
   @Column("last_transaction_date")
   OffsetDateTime lastTransactionDate;
 
@@ -39,7 +39,7 @@ public class Stock implements Persistable<Integer> {
   boolean isNewEntity = false;
 
   @Override
-  public Integer getId() {
+  public Long getId() {
     return this.productId;
   }
 

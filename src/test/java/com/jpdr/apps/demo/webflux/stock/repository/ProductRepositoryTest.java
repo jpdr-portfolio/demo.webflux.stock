@@ -2,9 +2,9 @@ package com.jpdr.apps.demo.webflux.stock.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jpdr.apps.demo.webflux.stock.exception.dto.ErrorDto;
 import com.jpdr.apps.demo.webflux.stock.exception.product.ProductNotFoundException;
 import com.jpdr.apps.demo.webflux.stock.exception.product.ProductRepositoryException;
-import com.jpdr.apps.demo.webflux.stock.exception.dto.ErrorDto;
 import com.jpdr.apps.demo.webflux.stock.repository.product.impl.ProductRepositoryImpl;
 import com.jpdr.apps.demo.webflux.stock.service.dto.product.ProductDto;
 import okhttp3.mockwebserver.MockResponse;
@@ -68,10 +68,10 @@ class ProductRepositoryTest {
     response.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
     mockWebServer.enqueue(response);
     
-    StepVerifier.create(productRepository.getProductById(1))
+    StepVerifier.create(productRepository.getProductById(1L))
       .assertNext(receivedProduct -> {
         assertEquals(expectedProduct.getId(), receivedProduct.getId());
-        assertEquals(expectedProduct.getName(), receivedProduct.getName());
+        assertEquals(expectedProduct.getProductName(), receivedProduct.getProductName());
         assertEquals(expectedProduct.getCategoryId(), receivedProduct.getCategoryId());
         assertEquals(expectedProduct.getCategoryName(), receivedProduct.getCategoryName());
         assertEquals(expectedProduct.getIsActive(), receivedProduct.getIsActive());
@@ -96,7 +96,7 @@ class ProductRepositoryTest {
     response.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
     mockWebServer.enqueue(response);
     
-    StepVerifier.create(productRepository.getProductById(1))
+    StepVerifier.create(productRepository.getProductById(1L))
       .expectError(ProductNotFoundException.class)
       .verify();
   }
@@ -111,7 +111,7 @@ class ProductRepositoryTest {
     response.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
     mockWebServer.enqueue(response);
     
-    StepVerifier.create(productRepository.getProductById(1))
+    StepVerifier.create(productRepository.getProductById(1L))
       .expectError(ProductRepositoryException.class)
       .verify();
   }

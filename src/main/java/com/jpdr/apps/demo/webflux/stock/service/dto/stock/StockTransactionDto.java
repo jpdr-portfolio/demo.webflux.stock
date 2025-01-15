@@ -22,9 +22,9 @@ import java.math.BigDecimal;
 public class StockTransactionDto implements Serializable {
   
   @JsonInclude(Include.NON_NULL)
-  Integer id;
+  Long id;
   @JsonInclude(Include.NON_NULL)
-  Integer productId;
+  Long productId;
   @JsonInclude(Include.NON_NULL)
   String description;
   @NonNull
